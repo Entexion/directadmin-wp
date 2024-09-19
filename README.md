@@ -4,8 +4,12 @@ Pre-requisite: wp-cli
 Install with the following commands:
 
 curl -O https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar
+
 chmod +x wp-cli.phar
+
 mv wp-cli.phar /usr/local/bin/wp
+
+Why was this created?
 
 Manually installing WordPress for each domain on a DirectAdmin server can be time-consuming and error-prone. This Bash script will automate this process and streamline the installation. It creates MySQL databases, and configures WordPress with ease. The script uses wp-cli to handle WordPress installations and database setup.
 
