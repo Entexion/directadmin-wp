@@ -32,6 +32,8 @@ Populating the Database and Admin User Creation: Using wp-cli, the script popula
 DirectAdmin Integration: The script ensures that the newly created MySQL database and user are reflected in DirectAdmin’s configuration.
 Displaying Admin Credentials: The script displays the WordPress admin credentials, including the login URL, username, and password, at the end of the process.
 
+Usage: ./install_wordpress.sh <directadmin_username> <target_domain>
+
 Feel free to modify as needed.
 
 Cheers,
