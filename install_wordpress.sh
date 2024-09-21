@@ -98,23 +98,34 @@ sed -i "s|database_name_here|$DB_NAME|" wp-config.php
 sed -i "s|username_here|$DB_USER|" wp-config.php
 sed -i "s|password_here|$DB_PASSWORD|" wp-config.php
 
-# Step 4: Install WordPress using WP-CLI
+# Step 4: Generate and Insert WordPress Salts
+echo "Fetching and adding WordPress salts..."
+SALT=$(curl -s https://api.wordpress.org/secret-key/1.1/salt/)
+if [ -z "$SALT" ]; then
+    echo "Error: Unable to fetch salts from WordPress API."
+    exit 1
+fi
+# Insert the salts into wp-config.php by replacing the placeholder section
+sed -i "/#@-/r /dev/stdin" wp-config.php <<< "$SALT"
+sed -i "/#@+/,/#@-/d" wp-config.php
+
+# Step 5: Install WordPress using WP-CLI
 echo "Installing WordPress..."
 # Generate a random admin password
 WP_ADMIN_PASSWORD=$(openssl rand -base64 12)
 WP_ADMIN_EMAIL="admin@$DOMAIN"
 
 # Use WP-CLI to run the installation
-wp core install --path=$WP_PATH --url="http://$DOMAIN" --title="$DOMAIN" --admin_user="admin" --admin_password="$WP_ADMIN_PASSWORD" --admin_email="$WP_ADMIN_EMAIL" --skip-email
+wp core install --path=$WP_PATH --url="http://$DOMAIN" --title="$DOMAIN" --admin_user="admin" --admin_password="$WP_ADMIN_PASSWORD" --admin_email="$WP_ADMIN_EMAIL" --skip-email --allow-root
 
-# Step 5: Update DirectAdmin configuration for MySQL
+# Step 6: Update DirectAdmin configuration for MySQL
 echo "Updating DirectAdmin configuration..."
 echo "action=create&name=$DB_NAME&user=$DB_USER&passwd=$DB_PASSWORD&userlist=$DA_USER" > /usr/local/directadmin/data/users/$DA_USER/mysql.conf
 
 # Ensure proper permissions
 chown -R $DA_USER:$DA_USER $WP_PATH
 
-# Step 6: Display WordPress admin credentials
+# Step 7: Display WordPress admin credentials
 WP_ADMIN_URL="http://$DOMAIN/wp-admin"
 echo "WordPress installation complete for $DOMAIN"
 echo "Admin Username: admin"
